@@ -11,7 +11,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/register" component={Register} />
+      <Route path="/applynow" component={Register} />
       <Route path="/success/:id" component={Success} />
       <Route component={NotFound} />
     </Switch>

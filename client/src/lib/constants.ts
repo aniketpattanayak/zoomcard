@@ -13,23 +13,23 @@ export const CATEGORY_ICONS = {
 
 export const BENEFITS = [
   {
-    title: "Industry Events Access",
-    description: "Exclusive access to premieres, award shows, and industry gatherings",
+    title: "Pan India Shoots Access",
+    description: "From artists to the entire crew, everyone can work on all shoots across Pan India seamlessly.",
     icon: "🎭"
   },
   {
-    title: "Networking Opportunities",
-    description: "Connect with top professionals and decision makers",
+    title: "Crew Member",
+    description: "All crew members receive genuine, decent, and clean work opportunities through the trusted Zoom Card Association across Pan India shoots.",
     icon: "🤝"
   },
   {
     title: "Priority Projects",
-    description: "Get early access to upcoming projects and casting calls",
+    description: "Gain early access to upcoming projects, casting calls, and exclusive work opportunities through the trusted Zoom Card Association across Pan India.",
     icon: "⭐"
   },
   {
     title: "Professional Profile",
-    description: "Verified industry presence and digital portfolio",
+    description: "Verified industry presence and digital portfolio. Only genuine, verified professionals connect with Zoom Card members for trusted work opportunities across India.",
     icon: "👤"
   }
 ];

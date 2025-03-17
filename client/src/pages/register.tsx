@@ -122,7 +122,7 @@ export default function Register() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">Artist Registration</h1>
+      <h1 className="text-3xl font-bold mb-8">Zoom Card Registration</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
@@ -199,7 +199,7 @@ export default function Register() {
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select blood group" />
+                          <SelectValue placeholder="Select Blood Group" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -233,6 +233,17 @@ export default function Register() {
                   />
                 )}
               </FormItem>
+
+              {/* ✅ Register Button Below Photo */}
+              <div className="flex mt-4 justify-start gap-4">
+                <Button type="submit" size="lg" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? "Processing..."
+                    : selectedCategory && price
+                    ? `Register as ${selectedCategory} (${price})`
+                    : "Register"}
+                </Button>
+              </div>
             </div>
 
             {/* ✅ Category Section */}
@@ -253,24 +264,24 @@ export default function Register() {
                   </FormItem>
                 )}
               />
+
               {/* ✅ 5000+ Active Members */}
-          <p className="text-center text-lg text-green-500 mt-4">
-            5000+ Active Members
-          </p>
+              <p className="text-center text-lg text-green-500 mt-4">
+                5,000+ Zoom Cards have already been registered under associations. The Zoom Card permits all shoots across Pan India.
+                <br/><br/><b className="text-red-700">Benefits for Zoom Card Members:</b><br/>
+                <div className="mx-20">
+                  <p className="text-xl text-gray-700 max-w-3xl mx-auto text-left">
+                    <span className="block">✅ Exclusive access to industry events</span>
+                    <span className="block">✅ Networking opportunities with professionals</span>
+                    <span className="block">✅ Personalized profile on our platform</span>
+                    <span className="block">✅ Priority consideration for projects</span>
+                    <span className="block">
+                      🔒 Security Deposit: ₹8,000 + 18% GST (Refundable within 90-120 days) for member security.
+                    </span>
+                  </p>
+                </div>
+              </p>
             </div>
-          </div>
-
-          
-
-          {/* ✅ Register Button */}
-          <div className="flex justify-end gap-4">
-            <Button type="submit" size="lg" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Processing..."
-                : selectedCategory && price
-                ? `Register as ${selectedCategory} (${price})`
-                : "Register"}
-            </Button>
           </div>
         </form>
       </Form>
