@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { BenefitsSection } from "@/components/benefits-section";
+import logo from "../pages/favicon.png"
 
 export default function Home() {
   return (
@@ -9,7 +10,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center mb-6">
             <img
-              src="./favicon.png" // Update with the correct path to your logo
+              src={logo} // Update with the correct path to your logo
               alt="Zoom Cards Logo"
               className="w-28" // Adjust size and spacing as needed
             />
