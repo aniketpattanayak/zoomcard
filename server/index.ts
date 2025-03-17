@@ -53,10 +53,10 @@ app.use((req, res, next) => {
       serveStatic(app);
     }
 
-    // Fixed port to 5000
+    // Use 127.0.0.1 for better compatibility with macOS
     const PORT = 5000;
-    server.listen(PORT, "0.0.0.0", () => {
-      log(`Server running at http://0.0.0.0:${PORT}`);
+    server.listen(PORT, "127.0.0.1", () => {
+      log(`Server running at http://127.0.0.1:${PORT}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
