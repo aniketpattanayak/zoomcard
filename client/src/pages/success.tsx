@@ -5,6 +5,7 @@ import { ArtistCard } from "@/components/artist-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Member } from "@shared/schema";
+import html2canvas from "html2canvas";
 
 export default function Success() {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +48,7 @@ export default function Success() {
             <Button
               onClick={() => {
                 // This will trigger the onCardGenerated callback in ArtistCard
-                const cardElement = document.querySelector("[data-html2canvas-ignore]");
+                const cardElement = document.querySelector(".card-container");
                 if (cardElement) {
                   html2canvas(cardElement as HTMLElement).then(downloadCard);
                 }
@@ -55,6 +56,10 @@ export default function Success() {
             >
               Download Membership Card
             </Button>
+
+            <p className="mt-4 text-sm text-muted-foreground">
+              Amount Paid: ₹{member.paymentAmount}
+            </p>
           </div>
         </div>
       </Card>
