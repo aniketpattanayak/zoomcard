@@ -3,14 +3,47 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CategoryGrid } from "@/components/category-grid";
-import { insertMemberSchema, type InsertMember } from "../../../server/models/schema";
+import {
+  insertMemberSchema,
+  type InsertMember,
+} from "../../../server/models/schema";
 import { BLOOD_GROUPS } from "@/lib/constants";
 import { apiRequest } from "@/lib/queryClient";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const CATEGORY_PRICES: Record<string, string> = {
+  Artist: "₹4,818",
+  Director: "₹7,290",
+  Producer: "₹9,890",
+  Writer: "₹2,560",
+  Production: "₹5,620",
+  Cinematographer: "₹6,510",
+  Singer: "₹3,210",
+  "Music Director": "₹4,150",
+};
 
 export default function Register() {
   const { toast } = useToast();
@@ -24,6 +57,7 @@ export default function Register() {
     resolver: zodResolver(insertMemberSchema),
   });
 
+  // ✅ Validate Coupon Code
   const validateCoupon = (code: string) => {
     if (code.toUpperCase() === "ABINASH10") {
       setIsValidCoupon(true);
@@ -41,6 +75,7 @@ export default function Register() {
     }
   };
 
+  // ✅ Handle Form Submission
   const handleSubmit = async (data: InsertMember) => {
     try {
       setIsSubmitting(true);
@@ -49,15 +84,18 @@ export default function Register() {
         couponCode: isValidCoupon ? "ABINASH10" : undefined,
       });
 
-      if (response.ok) {
-        setShowSuccessPopup(true);
+      console.log("API Response:", response); // ✅ Debugging
+
+      if (response?.status === 201) {
+        setShowSuccessPopup(true); // ✅ Trigger success popup
       } else {
-        throw new Error("Failed to register");
+        throw new Error(response?.statusText || "Failed to register");
       }
     } catch (error) {
       toast({
         title: "Registration Failed",
-        description: error instanceof Error ? error.message : "Please try again",
+        description:
+          error instanceof Error ? error.message : "Please try again",
         variant: "destructive",
       });
     } finally {
@@ -65,6 +103,7 @@ export default function Register() {
     }
   };
 
+  // ✅ Handle Photo Upload
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -77,6 +116,10 @@ export default function Register() {
     }
   };
 
+  // ✅ Watch selected category and calculate price
+  const selectedCategory = form.watch("category");
+  const price = selectedCategory ? CATEGORY_PRICES[selectedCategory] : null;
+
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-8">Artist Registration</h1>
@@ -84,6 +127,7 @@ export default function Register() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* ✅ Left Section */}
             <div className="space-y-4">
               {/* Name */}
               <FormField
@@ -130,6 +174,21 @@ export default function Register() {
                 )}
               />
 
+              {/* ✅ Address */}
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Blood Group */}
               <FormField
                 control={form.control}
@@ -156,7 +215,7 @@ export default function Register() {
                 )}
               />
 
-              {/* Photo Upload */}
+              {/* Photo */}
               <FormItem>
                 <FormLabel>Photo</FormLabel>
                 <FormControl>
@@ -174,29 +233,9 @@ export default function Register() {
                   />
                 )}
               </FormItem>
-
-              {/* Address */}
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <textarea
-                        {...field}
-                        rows={3}
-                        className="border rounded-md w-full p-2"
-                        placeholder="Enter your address"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
 
-            {/* Category */}
+            {/* ✅ Category Section */}
             <div>
               <FormField
                 control={form.control}
@@ -214,12 +253,23 @@ export default function Register() {
                   </FormItem>
                 )}
               />
+              {/* ✅ 5000+ Active Members */}
+          <p className="text-center text-lg text-green-500 mt-4">
+            5000+ Active Members
+          </p>
             </div>
           </div>
 
+          
+
+          {/* ✅ Register Button */}
           <div className="flex justify-end gap-4">
             <Button type="submit" size="lg" disabled={isSubmitting}>
-              {isSubmitting ? "Processing..." : `Register`}
+              {isSubmitting
+                ? "Processing..."
+                : selectedCategory && price
+                ? `Register as ${selectedCategory} (${price})`
+                : "Register"}
             </Button>
           </div>
         </form>
@@ -229,14 +279,26 @@ export default function Register() {
       <Dialog open={showSuccessPopup} onOpenChange={setShowSuccessPopup}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Registration Successful</DialogTitle>
+            <DialogTitle>Registration Successful!</DialogTitle>
           </DialogHeader>
-          <p>You have been registered successfully. We will get back to you soon!</p>
+          <p>You have successfully registered as a member.</p>
           <DialogFooter>
-            <Button onClick={() => setShowSuccessPopup(false)}>Close</Button>
+            <Button onClick={() => setShowSuccessPopup(false)}>OK</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ✅ WhatsApp Contact */}
+      <div className="flex justify-center mt-4">
+        <a
+          href="https://wa.me/8977907739"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-green-500 font-semibold underline"
+        >
+          Contact us on WhatsApp: +91 89779 07739
+        </a>
+      </div>
     </div>
   );
 }
