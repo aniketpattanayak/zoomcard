@@ -49,7 +49,7 @@ export default function Register() {
       setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/members", {
         ...data,
-        couponCode: isValidCoupon ? couponCode : undefined,
+        couponCode: isValidCoupon ? "ABINASH10" : undefined,
       });
       const { member, order } = await response.json();
 

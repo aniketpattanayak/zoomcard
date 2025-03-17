@@ -36,6 +36,8 @@ export const insertMemberSchema = createInsertSchema(members)
     photoUrl: true,
   })
   .extend({
+    couponCode: z.string().optional(),
+  .extend({
     category: z.enum(artistCategories),
     phone: z.string().min(10).max(10),
     bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]),

@@ -30,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const baseAmount = 944000; // Amount in paise (₹9,440 * 100)
       let finalAmount = baseAmount;
 
-      if (req.body.couponCode === "ABINASH10") {
+      if (memberData.couponCode === "ABINASH10") {
         finalAmount = Math.floor(baseAmount * 0.9); // 10% discount
       }
 
