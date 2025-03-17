@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { artistCategories } from "@shared/schema";
+import { artistCategories } from "../../../server/models/schema";
 import { CATEGORY_ICONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -24,6 +24,7 @@ export const members = pgTable("members", {
   paymentAmount: text("payment_amount").notNull(),
   paymentStatus: text("payment_status").notNull(),
   cardNumber: text("card_number").notNull(),
+  address: text("address").notNull(), // ✅ Added address field
 });
 
 export const insertMemberSchema = createInsertSchema(members)
@@ -34,13 +35,13 @@ export const insertMemberSchema = createInsertSchema(members)
     bloodGroup: true,
     category: true,
     photoUrl: true,
+    address: true, // ✅ Include address in validation
   })
-  .extend({
-    couponCode: z.string().optional(),
   .extend({
     category: z.enum(artistCategories),
     phone: z.string().min(10).max(10),
     bloodGroup: z.enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]),
+    address: z.string().min(5).max(255), // ✅ Add validation for address
   });
 
 export type InsertMember = z.infer<typeof insertMemberSchema>;

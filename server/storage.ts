@@ -1,48 +1,33 @@
-import { members, type Member, type InsertMember } from "@shared/schema";
+import { Member, type IMember } from "./models/Member";
 
 export interface IStorage {
-  createMember(member: InsertMember): Promise<Member>;
-  getMember(id: number): Promise<Member | undefined>;
-  getMemberByEmail(email: string): Promise<Member | undefined>;
-  getAllMembers(): Promise<Member[]>;
+  createMember(member: Omit<IMember, "_id">): Promise<IMember>;
+  getMember(id: string): Promise<IMember | null>;
+  getMemberByEmail(email: string): Promise<IMember | null>;
+  getAllMembers(): Promise<IMember[]>;
 }
 
-export class MemStorage implements IStorage {
-  private members: Map<number, Member>;
-  private currentId: number;
-
-  constructor() {
-    this.members = new Map();
-    this.currentId = 1;
-  }
-
-  async createMember(insertMember: InsertMember): Promise<Member> {
-    const id = this.currentId++;
-    const cardNumber = `AMP${String(id).padStart(6, '0')}`;
-    const member: Member = {
+export class MongoStorage implements IStorage {
+  async createMember(insertMember: Omit<IMember, "_id">): Promise<IMember> {
+    const member = new Member({
       ...insertMember,
-      id,
-      cardNumber,
-      paymentAmount: "9440.00", // Store as string for decimal precision
-      paymentStatus: "pending",
-    };
-    this.members.set(id, member);
+    });
+
+    await member.save();
     return member;
   }
 
-  async getMember(id: number): Promise<Member | undefined> {
-    return this.members.get(id);
+  async getMember(id: string): Promise<IMember | null> {
+    return await Member.findById(id);
   }
 
-  async getMemberByEmail(email: string): Promise<Member | undefined> {
-    return Array.from(this.members.values()).find(
-      (member) => member.email === email
-    );
+  async getMemberByEmail(email: string): Promise<IMember | null> {
+    return await Member.findOne({ email });
   }
 
-  async getAllMembers(): Promise<Member[]> {
-    return Array.from(this.members.values());
+  async getAllMembers(): Promise<IMember[]> {
+    return await Member.find();
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new MongoStorage();

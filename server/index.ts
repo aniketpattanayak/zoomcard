@@ -2,11 +2,15 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import connectDB from "./config/mongoose.ts"; // ✅ Import MongoDB connection
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
+// Increase payload limit to 50MB
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: false }));
+
+// Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -26,8 +30,8 @@ app.use((req, res, next) => {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
+      if (logLine.length > 200) {
+        logLine = logLine.slice(0, 199) + "…";
       }
 
       log(logLine);
@@ -39,13 +43,17 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
+    // ✅ Connect to MongoDB
+    await connectDB(); 
+
     const server = await registerRoutes(app);
 
+    // Error handling middleware
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";
       res.status(status).json({ message });
-      console.error(err);
+      console.error(`[ERROR] ${status}: ${message}`);
     });
 
     if (app.get("env") === "development") {
@@ -55,12 +63,12 @@ app.use((req, res, next) => {
     }
 
     // Use 127.0.0.1 for better compatibility with macOS
-    const PORT = 5000;
+    const PORT = process.env.PORT || 5000;
     server.listen(PORT, "127.0.0.1", () => {
-      log(`Server running at http://127.0.0.1:${PORT}`);
+      log(`🚀 Server running at http://127.0.0.1:${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("❌ Failed to start server:", error);
     process.exit(1);
   }
 })();

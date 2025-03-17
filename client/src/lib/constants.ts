@@ -1,4 +1,4 @@
-import { artistCategories } from "@shared/schema";
+import { artistCategories } from "server/shared/schema";
 
 export const CATEGORY_ICONS = {
   Artist: "🎨",

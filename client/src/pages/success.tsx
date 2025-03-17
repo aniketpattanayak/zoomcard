@@ -4,7 +4,7 @@ import { useParams } from "wouter";
 import { ArtistCard } from "@/components/artist-card";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { Member } from "@shared/schema";
+import type { Member } from "../../../server/models/schema";
 import html2canvas from "html2canvas";
 
 export default function Success() {

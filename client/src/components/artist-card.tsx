@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Member } from "@shared/schema";
+import type { Member } from "../../../server/models/schema";
 
 interface ArtistCardProps {
   member: Member;
