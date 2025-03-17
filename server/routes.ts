@@ -26,9 +26,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Calculate amount based on coupon
+      const baseAmount = 944000; // Amount in paise (₹9,440 * 100)
+      let finalAmount = baseAmount;
+
+      if (req.body.couponCode === "ABINASH10") {
+        finalAmount = Math.floor(baseAmount * 0.9); // 10% discount
+      }
+
       // Create Razorpay order
       const order = await razorpay.orders.create({
-        amount: 944000, // Amount in paise (₹9,440 * 100)
+        amount: finalAmount,
         currency: "INR",
         receipt: `mem_${Date.now()}`,
         payment_capture: 1
@@ -36,7 +44,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const member = await storage.createMember({
         ...memberData,
-        paymentStatus: "pending"
+        paymentStatus: "pending",
+        paymentAmount: (finalAmount / 100).toFixed(2), // Convert paise to rupees
       });
 
       res.status(201).json({

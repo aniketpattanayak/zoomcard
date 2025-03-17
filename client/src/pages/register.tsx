@@ -19,15 +19,38 @@ export default function Register() {
   const { toast } = useToast();
   const [photoPreview, setPhotoPreview] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [isValidCoupon, setIsValidCoupon] = useState(false);
 
   const form = useForm<InsertMember>({
     resolver: zodResolver(insertMemberSchema),
   });
 
+  const validateCoupon = (code: string) => {
+    // Validate coupon code
+    if (code.toUpperCase() === "ABINASH10") {
+      setIsValidCoupon(true);
+      toast({
+        title: "Coupon Applied!",
+        description: "You got 10% off on your membership fee.",
+      });
+    } else if (code) {
+      setIsValidCoupon(false);
+      toast({
+        title: "Invalid Coupon",
+        description: "Please enter a valid coupon code.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handlePayment = async (data: InsertMember) => {
     try {
       setIsSubmitting(true);
-      const response = await apiRequest("POST", "/api/members", data);
+      const response = await apiRequest("POST", "/api/members", {
+        ...data,
+        couponCode: isValidCoupon ? couponCode : undefined,
+      });
       const { member, order } = await response.json();
 
       const options = {
@@ -92,6 +115,9 @@ export default function Register() {
       reader.readAsDataURL(file);
     }
   };
+
+  const baseAmount = 9440;
+  const discountedAmount = isValidCoupon ? baseAmount * 0.9 : baseAmount;
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -185,6 +211,22 @@ export default function Register() {
                   />
                 )}
               </FormItem>
+
+              {/* Coupon Code Input */}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => validateCoupon(couponCode)}
+                >
+                  Apply
+                </Button>
+              </div>
             </div>
 
             <div>
@@ -209,7 +251,7 @@ export default function Register() {
 
           <div className="flex justify-end gap-4">
             <Button type="submit" size="lg" disabled={isSubmitting}>
-              {isSubmitting ? "Processing..." : "Register & Pay ₹9,440"}
+              {isSubmitting ? "Processing..." : `Register & Pay ₹${discountedAmount.toFixed(2)}`}
             </Button>
           </div>
         </form>
