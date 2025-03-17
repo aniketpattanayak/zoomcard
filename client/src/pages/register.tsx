@@ -54,7 +54,7 @@ export default function Register() {
       const { member, order } = await response.json();
 
       const options = {
-        key: process.env.RAZORPAY_KEY_ID,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Corrected line
         amount: order.amount,
         currency: order.currency,
         name: "Artist Membership Platform",
