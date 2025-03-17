@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -21,7 +21,7 @@ export const members = pgTable("members", {
   bloodGroup: text("blood_group").notNull(),
   category: text("category").notNull(),
   photoUrl: text("photo_url").notNull(),
-  paymentAmount: decimal("payment_amount").notNull(),
+  paymentAmount: text("payment_amount").notNull(),
   paymentStatus: text("payment_status").notNull(),
   cardNumber: text("card_number").notNull(),
 });

@@ -12,26 +12,72 @@ import { insertMemberSchema, type InsertMember } from "@shared/schema";
 import { BLOOD_GROUPS } from "@/lib/constants";
 import { apiRequest } from "@/lib/queryClient";
 
+declare const Razorpay: any;
+
 export default function Register() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [photoPreview, setPhotoPreview] = useState<string>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<InsertMember>({
     resolver: zodResolver(insertMemberSchema),
   });
 
-  const onSubmit = async (data: InsertMember) => {
+  const handlePayment = async (data: InsertMember) => {
     try {
+      setIsSubmitting(true);
       const response = await apiRequest("POST", "/api/members", data);
-      const member = await response.json();
-      navigate(`/success/${member.id}`);
+      const { member, order } = await response.json();
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Artist Membership Platform",
+        description: "Artist Membership Registration",
+        order_id: order.id,
+        handler: async function (response: any) {
+          try {
+            const verifyResponse = await apiRequest("POST", "/api/payments/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyResponse.ok) {
+              navigate(`/success/${member.id}`);
+            } else {
+              throw new Error("Payment verification failed");
+            }
+          } catch (error) {
+            toast({
+              title: "Payment verification failed",
+              description: "Please contact support if payment was deducted",
+              variant: "destructive",
+            });
+          }
+        },
+        prefill: {
+          name: data.name,
+          email: data.email,
+          contact: data.phone,
+        },
+        theme: {
+          color: "#2C3E50",
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
     } catch (error) {
       toast({
         title: "Registration failed",
         description: error instanceof Error ? error.message : "Please try again",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -52,7 +98,7 @@ export default function Register() {
       <h1 className="text-3xl font-bold mb-8">Artist Registration</h1>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(handlePayment)} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <FormField
@@ -162,8 +208,8 @@ export default function Register() {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button type="submit" size="lg">
-              Register & Pay ₹9,440
+            <Button type="submit" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? "Processing..." : "Register & Pay ₹9,440"}
             </Button>
           </div>
         </form>

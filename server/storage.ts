@@ -23,8 +23,8 @@ export class MemStorage implements IStorage {
       ...insertMember,
       id,
       cardNumber,
-      paymentAmount: 9440, // 8000 + 18% GST
-      paymentStatus: "completed",
+      paymentAmount: "9440.00", // Store as string for decimal precision
+      paymentStatus: "pending",
     };
     this.members.set(id, member);
     return member;
