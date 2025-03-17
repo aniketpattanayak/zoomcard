@@ -64,8 +64,8 @@ app.use((req, res, next) => {
 
     // Use 127.0.0.1 for better compatibility with macOS
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, "127.0.0.1", () => {
-      log(`🚀 Server running at http://127.0.0.1:${PORT}`);
+    server.listen(PORT, "0.0.0.0", () => {
+      log(`🚀 Server running at http://0.0.0.0:${PORT}`);
     });
   } catch (error) {
     console.error("❌ Failed to start server:", error);
